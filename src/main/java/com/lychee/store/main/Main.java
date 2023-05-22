@@ -1,25 +1,34 @@
 package com.lychee.store.main;
 
+import com.lychee.store.dao.CategoryDAO;
+import com.lychee.store.dao.ProductDAO;
+import com.lychee.store.model.Category;
 import com.lychee.store.model.Product;
-import jakarta.persistence.Persistence;
+import com.lychee.store.util.JPAUtil;
 
 import java.math.BigDecimal;
 
 public class Main {
 
     public static void main(String[] args) {
-        Product cellPhone = new Product();
-        cellPhone.setName("Xiaomi K9");
-        cellPhone.setDescription("Very Good");
-        cellPhone.setPrice(new BigDecimal("800"));
+        Category cells = new Category("CELLS");
+        Product cellPhone = new Product(
+                "Xiaomi K9",
+                "Very Good" ,
+                new BigDecimal("800"),
+                cells);
 
-        var entityManager = Persistence
-                .createEntityManagerFactory("store")
-                .createEntityManager();
+        var entityManager = JPAUtil.getEntityManager();
+        var productDAO =  new ProductDAO(entityManager);
+        var categoryDAO = new CategoryDAO(entityManager);
+
         entityManager
                 .getTransaction()
                 .begin();
-        entityManager.persist(cellPhone);
+
+        productDAO.register(cellPhone);
+        categoryDAO.register(cells);
+
         entityManager
                 .getTransaction()
                 .commit();
